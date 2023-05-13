@@ -22,7 +22,7 @@ class ImageClassificationTable(tables.Table):
     class Meta:
         model = ImageClassification
         template_name = "django_tables2/bootstrap.html"
-        fields = ("id", "image", "ip_address", "label")¸
+        fields = ("id", "image", "ip_address", "label")
 clicked = 1
 def index(request) :
   global clicked

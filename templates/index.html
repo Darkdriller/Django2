@@ -11,5 +11,9 @@
   <h2>This page is visited {{ count }} times.
   <p>Click <a href="help">here</a> for help.</p>
   <p>Click <a href="upload_image">here</a> for image Classification.</p>
+  {% load render_table from django_tables2 %}
+  <div class="table-responsive">
+    {% render_table table %}
+  </div>
 </body>
 </html>

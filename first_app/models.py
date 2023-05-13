@@ -19,6 +19,10 @@ class Student(models.Model):
     def __str__(self):
         d = self.program
         return self.roll_number + self.name  + d.title + d. branch
+class ImageClassification(models.Model):
+    image_data = models.BinaryField()
+    ip_address = models.CharField(max_length=255)
+    label = models.CharField(max_length=255)
 class User(models.Model):
     user_ip=models.GenericIPAddressField()
     def __str__(self) -> str:
