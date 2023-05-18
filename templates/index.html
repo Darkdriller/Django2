@@ -1,35 +1,86 @@
 <!DOCTYPE html>
-{% load static %}
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>First App</title>
-  <script src="{% static 'utils.js' %}"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Classification Model</title>
+  <style>
+    /* Reset some default styles */
+    body, h1, h2, p {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Main container */
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      perspective: 1000px;
+    }
+
+    /* Content section */
+    .content {
+      text-align: center;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      transform: rotateX(10deg);
+      transition: transform 0.5s ease;
+    }
+
+    .content:hover {
+      transform: rotateX(0deg);
+    }
+
+    .content h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    .content p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      text-align: justify;
+    }
+
+    .content a {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 20px;
+      background-color: #fff;
+      color: #333;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    .content a:hover {
+      background-color: #333;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
-  <h1>This is index.html</h1>
- 
-  <h2>{{ message }}</h2>
-  <h2>This page is visited {{ count }} times.
-  <p>Click <a href="help">here</a> for help.</p>
-  <p>Click <a href="upload_image">here</a> for image Classification.</p>
-  <p>Click <a href="statistics">here</a> for statistics.</p>
-
-  <table>
-    <thead>
-        <tr>
-            <th>IP Address</th>
-            <th>Classification</th>
-        </tr>
-    </thead>
-    <!-- <tbody>
-        {% for item in table %}
-            <tr>
-                <td>{{ item.ip_address }}</td>
-                <td>{{ item.classification }}</td>
-            </tr>
-        {% endfor %} -->
-    </tbody>
-</table>
+  <div class="container">
+    <div class="content">
+      <h1>Image Classification Model</h1>
+      <h4>Hey There!</h4>
+      <p>I am djs. This model classifies dog and cat breeds. Upload an image by clicking on Upload Image.
+        The Model will classify the breed of the dog or cat. You will be then redirected a classification
+        feedback Site. If you believe the classification is incorrect, you may give the correct breed in the 
+        form. Please give feedback as it helps train the model further.
+        If you want to see the statiscts of the model and check previous classifcations you can go to 
+        the statistics Page. Thank you and have a nice day
+      </p>
+      <a href="upload_image">Upload Image</a>
+      <a href="statistics">Statistics</a>
+    </div>
+  </div>
 </body>
 </html>
