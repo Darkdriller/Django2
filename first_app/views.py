@@ -1,12 +1,8 @@
 from django.shortcuts import render
-import django_tables2 as tables
 import base64
 from django.shortcuts import redirect
-# Create your views here.
 from django.http import HttpResponse
 # 'request' name is convention. It can be some other name too.
-from django.core.files.base import ContentFile
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
 from PIL import Image
 from .model import ImageClassifier
@@ -91,3 +87,21 @@ def classification_feedback(request):
         result.save()
 
     return redirect('index')
+def statistics(request):
+    total_results = ClassificationResult.objects.count()
+    correct_results = ClassificationResult.objects.filter(is_correct=True).count()
+    accuracy_percentage = 0
+
+    if total_results > 0:
+        accuracy_percentage = (correct_results / total_results) * 100
+
+    results = ClassificationResult.objects.all()
+    
+    context = {
+        'accuracy_percentage': accuracy_percentage,
+        'results': results,
+    }
+    if request.method == 'POST' and 'delete-button' in request.POST:
+        ClassificationResult.objects.all().delete()
+        return redirect('statistics')
+    return render(request, 'stats.html', context)
