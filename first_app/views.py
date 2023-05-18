@@ -1,8 +1,7 @@
 from django.shortcuts import render
 import django_tables2 as tables
-from .models import ImageClassification
-
-
+import base64
+from django.shortcuts import redirect
 # Create your views here.
 from django.http import HttpResponse
 # 'request' name is convention. It can be some other name too.
@@ -11,26 +10,37 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
 from PIL import Image
 from .model import ImageClassifier
-from .models import ImageClassification
-
-class ImageClassificationTable(tables.Table):
-    id = tables.Column()
-    image = tables.Column()
-    ip_address = tables.Column()
-    label = tables.Column()
-    
-    class Meta:
-        model = ImageClassification
-        template_name = "django_tables2/bootstrap.html"
-        fields = ("id", "image", "ip_address", "label")
+from .models import ClassificationResult
+import os
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+import time
 clicked = 1
+def save_uploaded_image(image):
+  fs = FileSystemStorage(location=settings.STATIC_DIR)
+  timestr = time.strftime("%Y%m%d-%H%M%S")
+  filename = fs.save(timestr+'upload'+image.name, image)
+  image_path = os.path.join(settings.STATIC_URL, filename)
+  return image_path
 def index(request) :
   global clicked
   my_dict = { 'message' : "This is an injected content",'count' : clicked}
   clicked += 1
-  classifications = ImageClassification.objects.all()
-  table = ImageClassificationTable(classifications)
-  my_dict = { 'message' : "This is an injected content",'count' : clicked, 'table':table}
+  # classifications = ImageClassification.objects.all()
+  # classification_list = [
+  #     {
+  #         "image": classification.image_data,
+  #         "ip_address": classification.ip_address,
+  #         "classification": classification.label,
+  #     }
+  #     for classification in classifications
+  # ]
+  # table = ImageClassificationTable(classifications)
+  # print(classifications)
+  def binaryToDataURL(binaryData):
+        base64String = base64.b64encode(binaryData).decode('utf-8')
+        return base64String
+  my_dict = { 'message' : "This is an injected content",'count' : clicked, 'binaryToDataURL': binaryToDataURL}
   response = render(request,'index.html',context=my_dict)
   return response
 def help(request):
@@ -46,18 +56,38 @@ def classify_image(request):
         # create an in-memory file-like object from the uploaded image file
         image_buffer = BytesIO(image_file.read())
         image = Image.open(image_buffer)
-        
-        
         # preprocess and classify the image using the ImageClassifier class
+        image_path = save_uploaded_image(image_file)
         classifier = ImageClassifier()
         image_bytes = BytesIO()
         image.save(image_bytes, format='JPEG')
         predicted_classes = classifier.predict(image_bytes)
-        classification = ImageClassification(
-            image_data=image_file.read(),
-            ip_address=request.META.get('REMOTE_ADDR', ''),
-            label=predicted_classes[0][1]
-        )
-        classification.save()
+        # classification = ImageClassification(
+        #     image_data=image_file.read(),
+        #     ip_address=request.META.get('REMOTE_ADDR', ''),
+        #     label=predicted_classes[0][1]
+        # )
+        # classification.save()
         # do something with the predicted classes, e.g. return as JSON response
-        return HttpResponse(predicted_classes[0][1])
+        prediction=predicted_classes[0][1]
+        return render(request,'result.html', context={'image_path':image_path, 'predicted_class':prediction})
+    else:
+        return render(request, 'image.html')
+def classification_feedback(request):
+    if request.method == 'POST':
+        image_path = request.POST.get('image')
+        ip_address = request.POST.get('ip_address')
+        prediction = request.POST.get('prediction')
+        is_correct = request.POST.get('is_correct')
+        correct_label = request.POST.get('correct_label', '')
+
+        result = ClassificationResult(
+            image_path=image_path,
+            ip_address=ip_address,
+            prediction=prediction,
+            is_correct=is_correct == 'yes',
+            correct_label=correct_label
+        )
+        result.save()
+
+    return redirect('index')

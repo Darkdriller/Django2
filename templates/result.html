@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <title>Result</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+              <div class="col-md-6 offset-md-3">
+                <div class="text-center">
+                  <h1>Uploaded Image</h1>
+                  <img src={{image_path}} class="img-fluid" alt="uploaded image">
+                  <h2>Predicted Class:</h2>
+                  <h3>{{ predicted_class }}</h3>
+                  <form action="/classification_feedback/" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="image" value="{{ image_path }}">
+                    <input type="hidden" name="ip_address" value="{{ request.META.HTTP_X_FORWARDED_FOR|default:request.META.REMOTE_ADDR }}">
+                    <input type="hidden" name="prediction" value="{{ predicted_class }}">
+                    <label for="is_correct">Is the classification correct?</label>
+                    <select id="is_correct" name="is_correct">
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                    <div id="correct_label_div" style="display: none;">
+                      <label for="correct_label">Specify the correct label:</label>
+                      <input type="text" id="correct_label" name="correct_label">
+                    </div>
+                    <button type="submit">Submit Feedback</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <script>
+            document.getElementById('is_correct').addEventListener('change', function() {
+              var correctLabelDiv = document.getElementById('correct_label_div');
+              correctLabelDiv.style.display = this.value === 'no' ? 'block' : 'none';
+            });
+          </script>
+    </body>
+    
+</html>

@@ -23,5 +23,6 @@ urlpatterns = [
     path('help/', views.help, name='help'),
     path('', views.index, name='index'),
     path('upload_image/', views.upload_image, name='upload_image'),
-    path('classify_image/', views.classify_image, name='upload_image'),
+    path('classify_image/', views.classify_image, name='classify_image'),
+    path('classification_feedback/' , views.classification_feedback, name='feedback')
 ]
